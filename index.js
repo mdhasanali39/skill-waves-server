@@ -96,7 +96,18 @@ async function run() {
       res.send(result)
     })
 
-    
+    // access token 
+    app.post("/api/v1/user/access-token",(req, res)=>{
+      const userEmail = req.body;
+      const token = jwt.sign(userEmail, process.env.SECRET,{expiresIn:'1h'})
+
+      res.cookie('token', token,{
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
+      })
+      .send({status: true})
+    })
 
 
     // put and patch method 
