@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config'
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
 import { Collection, MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 
 // create express instance 
@@ -12,6 +14,7 @@ app.use(cors({
   origin:["http://localhost:5173"],
   credentials: true
 }))
+app.use(cookieParser())
 app.use(express.json())
 
 // mongodb database connect 
@@ -36,6 +39,7 @@ async function run() {
     const jobsCollection = client.db("skillwavesDB").collection("jobs");
     const bidJobsCollection = client.db("skillwavesDB").collection("bidjobs");
 
+    // get method 
     // get single job data 
     app.get("/api/v1/job/:id", async(req, res)=>{
       const id = req.params.id;
@@ -62,6 +66,23 @@ async function run() {
       res.send(result)
     })
 
+    // get bids data - email specified
+    app.get("/api/v1/bid/all", async(req, res)=>{
+      const userEmail = req.query['user-email'];
+      const employerEmail = req.query['employer-email'];
+      const query = {}
+
+      if(userEmail){
+        query.employee_email = userEmail
+      }
+      if(employerEmail){
+        query.job_owner_email = employerEmail
+      }
+
+      const result = await bidJobsCollection.find(query).toArray();
+      res.send(result)
+    })
+    // post method 
     // create job api
     app.post("/api/v1/job/create-job", async(req, res)=>{
         const job = req.body;
@@ -74,6 +95,14 @@ async function run() {
       const result = await bidJobsCollection.insertOne(bidJob);
       res.send(result)
     })
+
+   
+
+
+    
+    
+
+    // delete method 
 
     // delete job 
     app.delete("/api/v1/job/delete-job/:id", async(req, res)=>{
