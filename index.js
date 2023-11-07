@@ -68,7 +68,12 @@ async function run() {
         const result = await jobsCollection.insertOne(job)
         res.send(result)
     })
-    
+    // bid job api
+    app.post("/api/v1/job/bid-job", async(req, res)=>{
+      const bidJob = req.body;
+      const result = await bidJobsCollection.insertOne(bidJob);
+      res.send(result)
+    })
 
     
 
