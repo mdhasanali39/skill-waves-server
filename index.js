@@ -1,14 +1,17 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config'
-import { Collection, MongoClient, ServerApiVersion } from 'mongodb';
+import { Collection, MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 
 // create express instance 
 const app = express()
 const port = process.env.PORT || 5000;
 
 // middleware 
-app.use(cors())
+app.use(cors({
+  origin:["http://localhost:5173"],
+  credentials: true
+}))
 app.use(express.json())
 
 // mongodb database connect 
@@ -31,13 +34,27 @@ async function run() {
     await client.connect();
     // creating database and collection
     const jobsCollection = client.db("skillwavesDB").collection("jobs");
+    const bidJobsCollection = client.db("skillwavesDB").collection("bidjobs");
+
+    // get single job data 
+    app.get("/api/v1/job/:id", async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await jobsCollection.findOne(query);
+      res.send(result)
+    })
+
+    
 
     // create job api
-    app.post('/api/v1/job/create-job', async(req, res)=>{
+    app.post("/api/v1/job/create-job", async(req, res)=>{
         const job = req.body;
         const result = await jobsCollection.insertOne(job)
         res.send(result)
     })
+    
+
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
