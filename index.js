@@ -121,7 +121,19 @@ async function run() {
       res.send(result)
     })
 
-   
+    // patch - update/change a specific filed in bidJobsCollection
+    app.patch("/api/v1/bid/update-specific/:id", async(req, res)=>{
+      const id = req.params.id;
+      const status = req.body;
+      const filter = {_id: new ObjectId(id)}
+      const updatedData = {
+        $set: {
+          status: status.status
+        }
+      }
+      const result = await bidJobsCollection.updateOne(filter, updatedData)
+      res.send(result)
+    })
 
     // delete method 
 
