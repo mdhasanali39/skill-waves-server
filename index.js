@@ -44,7 +44,23 @@ async function run() {
       res.send(result)
     })
 
-    
+    // get jobs data 
+    app.get("/api/v1/jobs", async(req,res)=>{
+      const category = req.query.category;
+      const userEmail = req.query['user-email'];
+      // console.log('category', category);
+      // console.log('user email', userEmail);
+      const query = {}
+      if(category){
+        query.category = category
+      }
+      if(userEmail){
+        query.employer_email = userEmail
+      }
+      // const query = {category: category}
+      const result = await jobsCollection.find(query).toArray();
+      res.send(result)
+    })
 
     // create job api
     app.post("/api/v1/job/create-job", async(req, res)=>{
