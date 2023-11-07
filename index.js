@@ -96,11 +96,32 @@ async function run() {
       res.send(result)
     })
 
+    
+
+
+    // put and patch method 
+    // update job - id specific
+    app.put("/api/v1/job/update-job/:id", async(req, res)=>{
+      const id = req.params.id;
+      const job = req.body;
+      const filter = {_id: new ObjectId(id)}
+      const options = { upsert: false };
+      const updatedJobData = {
+        $set: {
+            employer_email:job.employer_email,
+            job_title:job.job_title,
+            job_deadline:job.job_deadline,
+            category:job.category,
+            min_price:job.min_price,
+            max_price:job.max_price,
+            description:job.description  
+        }
+      }
+      const result = await jobsCollection.updateOne(filter,updatedJobData, options)
+      res.send(result)
+    })
+
    
-
-
-    
-    
 
     // delete method 
 
