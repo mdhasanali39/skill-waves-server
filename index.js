@@ -156,7 +156,11 @@ async function run() {
       const result = await jobsCollection.deleteOne(query)
       res.send(result)
     })
-
+    app.get("/api/v1/user/delete-token", (req, res)=>{
+      res
+      .clearCookie("token",{maxAge:0, secure: true, sameSite: 'none'})
+      .send({status: true})
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
