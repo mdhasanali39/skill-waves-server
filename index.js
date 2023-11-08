@@ -16,9 +16,25 @@ app.use(cors({
 }))
 app.use(cookieParser())
 app.use(express.json())
+// custom middleware 
+const tokenVerify = (req, res, next)=>{
+  const token = req.cookies?.token
+  if(!token){
+    return res.status(401).send({status:"Unauthorized access"})
+  }
+  jwt.verify(token,process.env.SECRET, (err, decoded)=>{
+    if(err){
+      return  res.status(401).send({status:"Unauthorized access"})
+    }else{
+      req.user = decoded;
+      console.log(decoded);
+      next()
+    }
+  })
+}
+
 
 // mongodb database connect 
-
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@skillwavescluster.88ddzp7.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -67,7 +83,7 @@ async function run() {
     })
 
     // get bids data - email specified
-    app.get("/api/v1/bid/all", async(req, res)=>{
+    app.get("/api/v1/bid/all",tokenVerify, async(req, res)=>{
       const userEmail = req.query['user-email'];
       const employerEmail = req.query['employer-email'];
       const query = {}
