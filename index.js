@@ -139,11 +139,15 @@ async function run() {
         expiresIn: "1h",
       });
 
+      const expirationDate = new Date(); // Create a new Date object
+      expirationDate.setDate(expirationDate.getDate() + 1);
+
       res
         .cookie("token", token, {
           httpOnly: true,
           secure: true,
           sameSite: "none",
+          maxAge: expirationDate,
         })
         .send({ status: true });
     });
