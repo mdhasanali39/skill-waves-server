@@ -68,6 +68,7 @@ async function run() {
     app.get("/api/v1/jobs", async (req, res)=>{
       
       const category = req.query.category;
+      console.log('category',category);
       const query = {};
       if(category){
         query.category = category
